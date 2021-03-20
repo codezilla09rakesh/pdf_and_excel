@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- Step 1 - Include the fusioncharts core library -->
+    <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js"></script>
+    <!-- Step 2 - Include the fusion theme -->
+    <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js"></script>
+</head>
+<body>
+
+<div class="jumbotron text-center">
+  <h1>My First Bootstrap Page</h1>
+  <p>Resize this responsive page to see the effect!</p>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div id="chart-container"></div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    $( document ).ready(function() {
+        console.log( "ready!" );
+        var schema ;
+        url = "https://s3.eu-central-1.amazonaws.com/fusion.store/ft/data/candlestick-chart-data.json"
+        url_sh = "https://s3.eu-central-1.amazonaws.com/fusion.store/ft/schema/candlestick-chart-schema.json"
+        $.get(url_sh)
+        .then(data=>{
+           schema = data
+        });
+        $.get(url)
+        .then(data =>{
+            const share_data = data
+            const dataStore = new FusionCharts.DataStore();
+            const dataSource = {
+                chart: {},
+                caption: {
+                    text: "Apple Inc. Stock Price"
+                },
+                subcaption: {
+                    text: "Stock prices from January 1980 - November 2011"
+                },
+                yaxis: [{
+                        plot: [{
+                            value: {
+                                open: "Open",
+                                high: "High",
+                                low: "Low",
+                                close: "Close"
+                            },
+                            type: "candlestick"
+                        },
+                            {
+                                value: "Low",
+                                type: "line"
+                            },
+                            {
+                                value: "Open",
+                                type: "column"
+                            }
+                        ],
+                        format: {
+                            prefix: "$"
+                        },
+                        title: "Stock Value"
+                    }]
+            };
+            dataSource.data = dataStore.createDataTable(share_data, schema);
+            new FusionCharts({
+                type: "timeseries",
+                renderAt: "chart-container",
+                width: "100%",
+                height: "500",
+                dataSource: dataSource
+            }).render();
+        });
+    });
+</script>
+
+</body>
+</html>
